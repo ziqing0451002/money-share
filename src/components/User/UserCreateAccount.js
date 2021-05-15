@@ -1,5 +1,13 @@
 import React from 'react';
 import UserService from '../../services/UserService';
+import { Redirect } from 'react-router';
+import Modal from '@material-ui/core/Modal';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 
 
 class UserCreateAccount extends React.Component {
@@ -10,40 +18,33 @@ class UserCreateAccount extends React.Component {
         userAccount : "" , 
         userPassword : "",
         userName : "",
-        userPhoneNember : ""
+        userPhoneNember : "",
+        modalOpen: false
         }
         // this.login = this.login.bind(this);
     }
 
     handleChange = (e) => {
-        // console.log(e.target.id)
-        // if (e.target.id === "userAccount"){
-        //     this.setState({
-        //         userAccount: e.target.value
-        //     })
-        // }else if(e.target.id === "userPassword"){
-        //     this.setState({
-        //         userPassword: e.target.value
-        //     })
-        // }
-        
         this.setState({
             [e.target.id] : e.target.value
         })
     }
 
     submit = () => {
-        UserService.addUser(this.state).then(
-            () => window.alert("SUCCESS")
-        ).catch(
-            () => window.alert("FAIL")
-        )
+        UserService.addUser(this.state).then((response) => {
+            console.log(response);
+            console.log("SUCCESS");
+            this.setState({ modalOpen: true })
+        }
+        ).catch((err) => {
+            console.log(err);
+            window.alert("密碼或密碼錯誤")
+            // this.setState({ redirect: false })
+        })
     }
-
-
     
     cancel = () => {
-        window.alert("返回")
+        this.setState({ redirect: true })
     }
 
 
@@ -53,9 +54,20 @@ class UserCreateAccount extends React.Component {
         console.log(this.state.userName)
         console.log(this.state.userPhoneNumber)
         console.log(this.state)
-
+        console.log(this.state.redirect)
+        if (this.state.redirect) {
+            return <Redirect push to={'/UserLogin'} />;
+        }
+        const style = {
+            backgroundColor: 'white',
+            font: 'inherit',
+            border: '1px solid blue',
+            padding: '8px',
+            cursor: 'pointer'
+        };
         return (
             <div>
+                <h1 align="center">建立帳號</h1>
                 <label>帳號：</label>
                 <input 
                 id="userAccount" 
@@ -65,7 +77,8 @@ class UserCreateAccount extends React.Component {
                 <br/>
                 <label>密碼：</label>
                 <input 
-                id="userPassword" 
+                id="userPassword"
+                type="password" 
                 onChange={(e) => this.handleChange(e)}
                 value={this.state.userPassword} 
                 />
@@ -84,9 +97,20 @@ class UserCreateAccount extends React.Component {
                 value={this.state.userPhoneNumber} 
                 />
                 <br/>
-
                 <button onClick={this.submit}>確認</button>
                 <button onClick={this.cancel}>取消</button>
+
+                <Modal
+                    open={this.state.modalOpen}
+                    // onClose={handleClose}
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                >
+                    <div style={style}>
+                        <h2 id="simple-modal-title">帳號建立成功</h2>
+                        <button><Link to="./UserLogin">確認</Link></button>
+                    </div>
+                </Modal>
 
             </div>
 
