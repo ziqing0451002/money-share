@@ -61,7 +61,7 @@ class UserLoginComponent extends React.Component {
             //     pathname:'/UserListController',
             //     state:this.state.userAccount
             // }
-            return <Redirect push to={'/ShareList'} />;
+            return <Redirect push to={`/ShareList?userID=${this.state.userAccount}`} />;
             //   return <Redirect push to={'/UserListController/'}/>;
             // return <Link to='/UserListController' component={UserListComponent} />;
         }

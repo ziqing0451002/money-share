@@ -20,7 +20,8 @@ class ShareListComponent extends React.Component {
             shareList: [],
             modalOpen: false,
             selectedUser: '',
-            userPasswordCommit: ''
+            userPasswordCommit: '',
+            userLoginAccount:''
         }
     }
 
@@ -38,7 +39,7 @@ class ShareListComponent extends React.Component {
             // console.log(params)
                 // console.log(params.row.userAccount)
                 <div>
-                    <button><Link to={`./AddUserController?mode=editAccount&userID=${params.row.userAccount}`}>編輯</Link></button>
+                    <button><Link to={`./AddShareList?mode=editShareList&userID=${params.row.userAccount}`}>編輯</Link></button>
                     {/* <button><Link to={`./AddUserController?mode=viewAccount&userID=${params.row.userAccount}`}>檢視</Link></button> */}
                     {/* <button><Link to={{
                         pathname:'./AddUserController?ID=viewAccount',
@@ -47,8 +48,22 @@ class ShareListComponent extends React.Component {
                     <button onClick={this.deleteClick}>刪除</button>
                 </div>
         }];
+        getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
 
     componentDidMount() {
+            var linkMode = this.getParameterByName('mode');
+            var linkUserId = this.getParameterByName('userID');
+            this.setState({ mode: linkMode })
+            this.setState({ userLoginAccount: linkUserId })
+            // this.test("AA001","1234")
+
         ShareListService.getShareList().then((response) => {
             console.log(response)
             const data = response.data
@@ -121,9 +136,10 @@ class ShareListComponent extends React.Component {
         };
         return (
             <div style={{ height: 400, width: '100%' }}>
-                <h1 align="left">連線帳號管理</h1>
-                <h3 align="left">帳號清單</h3>
-                <Button><Link to="./AddUserController?mode=addAccount">+新增一筆</Link></Button>
+                <h1 align="left">分帳程式</h1>
+                <h3 align="left">分帳清單</h3>
+                <h5 align="right">登入帳號為:{this.state.userLoginAccount}</h5>
+                <Button><Link to={`./AddShareList?mode=addShareList&userID=${this.state.userLoginAccount}`}>+新增一筆</Link></Button>
                 <DataGrid rows={this.state.shareList || []} columns={this.columns} pageSize={20} onRowClick={(rowData) => this.setSelection(rowData)} />
 
                 <Modal

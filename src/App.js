@@ -4,6 +4,7 @@ import UserLoginComponent from './components/User/UserLoginComponent';
 import UserLogin from './controllers/UserLogin';
 import ShareList from './controllers/ShareList';
 import AddUser from './controllers/AddUser';
+import AddShareList from './controllers/AddShareList';
 import Home from './controllers/Home';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
@@ -11,10 +12,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 function App() {
   return (
     <div className="App">
-      {/* <UserComponent /> */}
-      {/* <UserLoginController /> */}
-      {/* <UserLoginComponent /> */}
-      {/* <UserCreateAccount /> */}
+
       <BrowserRouter>
         <Switch>
         <Route exact path='/'>
@@ -28,6 +26,9 @@ function App() {
           </Route>
           <Route exact path='/AddUser'>
             <AddUser />
+          </Route>
+          <Route exact path='/AddShareList'>
+            <AddShareList />
           </Route>
         </Switch>
       </BrowserRouter>
