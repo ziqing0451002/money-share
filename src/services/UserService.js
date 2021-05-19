@@ -9,6 +9,11 @@ class UserService{
         return axios.get(USER_REST_API_URL + "/getUser");
     }
 
+    getUserByAccount(userAccount){
+        //http://localhost:8080/UserInfo/getUserByAccount/ziqing?
+        return axios.get(USER_REST_API_URL + "/getUserByAccount/" + userAccount);
+    }
+
     userLogin(userAccount,userPassword){
         return axios.get(USER_REST_API_URL + "/login/" + userAccount + "?userPassword=" +userPassword)
     }

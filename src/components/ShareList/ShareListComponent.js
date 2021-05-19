@@ -36,7 +36,7 @@ class ShareListComponent extends React.Component {
         {
             field: 'functionList', headerName: '功能', width: 150,
             renderCell: (params) =>
-            // console.log(params)
+            // console.log(params);
                 // console.log(params.row.userAccount)
                 <div>
                     <button><Link to={`./AddShareList?mode=editShareList&userID=${params.row.userAccount}`}>編輯</Link></button>
