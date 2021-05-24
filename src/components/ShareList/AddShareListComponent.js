@@ -4,6 +4,7 @@ import ShareListService from '../../services/ShareListService';
 import UserService from '../../services/UserService';
 // import AddUserModal from './AddUserModal'
 import Modal from '@material-ui/core/Modal';
+import Button from '@material-ui/core/Button';
 import {
     BrowserRouter as Router,
     Switch,
@@ -28,13 +29,24 @@ class AddShareListComponent extends React.Component {
             modalOpen: false,
             mode: '',
             uiDisable: false,
-            memberList:[],
-            memberName:[]
+            memberList: [],
+            memberName: [],
+            value: '',
+            memberSelected:""
 
         }
         //設定該function的this為class本身
-        // this.changeState = this.changeState.bind(this)
-        // this.submitForm = this.submitForm.bind(this)
+        this.changeState = this.changeState.bind(this)
+        this.submitForm = this.submitForm.bind(this)
+    }
+
+    handleSelectChange = (e) => {
+        console.log("e:"+ e)
+        const addNameList = e.map((userName) => userName.value);
+        this.setState({
+            memberSelected: e,
+            listMember: addNameList.join()
+        });
     }
 
     //傳入event要取觸發事件的元件
@@ -44,32 +56,40 @@ class AddShareListComponent extends React.Component {
         this.setState({ [changeName]: event.target.value })
     }
     // //新增一個submit的function
-    // submitForm(event) {
-    //     console.log(this.state)
-    //     if (this.state.mode === "addShareList") {
-    //         UserService.AddUser(this.state).then((response) => {
-    //             console.log("SUCCESS")
-    //             this.setState({ modalOpen: true });
-    //         })
-    //     } else if (this.state.mode === "editShareList") {
-    //         UserService.editUser(
-    //             this.state.userAccount,
-    //             this.state.userName,
-    //             this.state.userEmail,
-    //             this.state.serviceName,
-    //             this.state.agenciesName,
-    //             this.state.status,
-    //             this.state.remark
-    //         ).then((response) => {
-    //             console.log("SUCCESS")
-    //             this.setState({ modalOpen: true });
-    //         })
-    //     }
+    submitForm(event) {
+        console.log(this.state)
+        // this.setState({
+        //     listMember: this.state.listMember.join()
+        // });
+        console.log("submitForm")
+        console.log(this.state)
+        if (this.state.mode === "addShareList") {
+            ShareListService.addShareList(this.state).then((response) => {
+                console.log(response)
+                console.log("SUCCESS")
+                this.setState({ modalOpen: true });
+            }).catch((err) => {
+                window.alert("新增失敗")
+                console.log("err: "+ err);
+                this.setState({ modalOpen: false });
+                // this.setState({ redirect: false })
+            })
+        } else if (this.state.mode === "editShareList") {
+            ShareListService.editShareList(
+                this.state.listId,
+                this.state.listName,
+                this.state.listCreater,
+                this.state.listMember,
+            ).then((response) => {
+                console.log("SUCCESS")
+                this.setState({ modalOpen: true });
+            })
+        }
 
 
 
-    //     event.preventDefault()
-    // }
+        event.preventDefault()
+    }
 
 
 
@@ -85,10 +105,16 @@ class AddShareListComponent extends React.Component {
     componentDidMount() {
         var linkMode = this.getParameterByName('mode');
         var linkUserId = this.getParameterByName('userID');
+        var linkListId = this.getParameterByName('listID');
         console.log(linkUserId)
         this.setState({ mode: linkMode })
-        this.getUserLogin(linkUserId)
+        this.setState({ userLoginAccount: linkUserId })
         this.getUsers(linkUserId)
+        this.getUserLogin(linkUserId)
+        if (linkMode === "editShareList" ){
+            this.getShareListInfo(linkListId)
+
+        }
 
     }
 
@@ -112,10 +138,10 @@ class AddShareListComponent extends React.Component {
         UserService.getUsers().then((response) => {
             const data = response.data
             console.log("data:" + data)
-            const memberList = data.map((item) => ({ ...item}))
-            const memberName = memberList.map((userName) => ({value:userName.userName, label:userName.userName +"("+ userName.userAccount+")" }))
-            this.setState({ memberList})
-            this.setState({ memberName})
+            const memberList = data.map((item) => ({ ...item }))
+            const memberName = memberList.map((userName) => ({ value: userName.userName, label: userName.userName + "(" + userName.userAccount + ")" }))
+            this.setState({ memberList })
+            this.setState({ memberName })
             console.log("SUCCESS");
         }
         ).catch((err) => {
@@ -124,29 +150,31 @@ class AddShareListComponent extends React.Component {
         })
     }
 
-
-
-    //0518
-    //把所有使用者撈出來，Name(userAccount)做成多選select(去更改取名規則:取名不得重複，名稱取好後不能修改)，選玩弄籌自己要的格式送API
-
-
-
     //帶入該row之shareList info
-    // getShareListInfo = (userID) => {
-    //     UserService.getUserInfo(userID).then((response) => {
-    //         const data = response.data
-    //         this.setState({ serviceName: data.serviceName })
-    //         this.setState({ userAccount: data.userAccount })
-    //         this.setState({ agenciesName: data.agenciesName })
-    //         this.setState({ userEmail: data.userEmail })
-    //         this.setState({ userAddress: data.userAddress })
-    //         this.setState({ userPassword: data.userPassword })
-    //         this.setState({ userName: data.userName })
-    //         this.setState({ status: data.status })
-    //         this.setState({ remark: data.remark })
+    getShareListInfo = (listID) => {
+        ShareListService.getShareListById(listID).then((response) => {
+            const data = response.data
+            console.log(data)
+            this.setState({ listId: data.listId })
+            this.setState({ listCreater: data.listCreater })
+            this.setState({ listName: data.listName })
+            this.setState({ listMember: data.listMember.split(',') })
+            this.setState({ memberSelected: data.listMember.split(',') })
 
-    //     })
-    // }
+            const members = data.listMember.split(',')
+            console.log(members)
+            const allMembers = this.state.memberName
+            console.log(allMembers)
+            const memberShow = allMembers.filter(allMember=>members.find(member=>allMember.value===member))
+            this.setState({ memberSelected: memberShow })
+
+            // const memberShow = allMember.map((userName,item) => ({ 
+                
+            //     value: userName.userName, label: userName.userName
+                
+            // }))
+        })
+    }
 
 
     render() {
@@ -161,18 +189,19 @@ class AddShareListComponent extends React.Component {
         return (
 
             <div style={{ height: 400, width: '100%' }}>
-                <h1 align="left" hidden={this.state.mode === 'addShareList' ? false : true}>連線帳號新增</h1>
-                <h1 align="left" hidden={this.state.mode === 'editShareList' ? false : true}>連線帳號編輯</h1>
-                <h1 align="left" hidden={this.state.mode === 'viewShareList' ? false : true}>連線帳號檢視</h1>
+                <h1 align="left" hidden={this.state.mode === 'addShareList' ? false : true}>分帳表新增</h1>
+                <h1 align="left" hidden={this.state.mode === 'editShareList' ? false : true}>分帳表編輯</h1>
+                <h5 align="right">登入帳號為:{this.state.userLoginAccount}</h5>
+
 
                 <form onSubmit={this.submitForm} align="left">
                     <TextField
                         variant="filled"
                         label="分帳ID (由系統建立)"
-                        id="shareListId"
-                        name="shareListId"
+                        id="listId"
+                        name="listId"
                         value={this.state.listId}
-                        onChange={this.changeState}
+                        // onChange={this.changeState}
                         // required
                         disabled
                         placeholder="此為系統提供"
@@ -182,8 +211,8 @@ class AddShareListComponent extends React.Component {
                     <TextField
                         variant="filled"
                         label="建立人"
-                        id="shareListCreater"
-                        name="shareListCreater"
+                        id="listCreater"
+                        name="listCreater"
                         value={this.state.listCreater}
                         onChange={this.changeState}
                         required
@@ -194,8 +223,8 @@ class AddShareListComponent extends React.Component {
                     <br />
                     <TextField
                         label="分帳表名稱"
-                        id="shareListName"
-                        name="shareListName"
+                        id="listName"
+                        name="listName"
                         value={this.state.listName}
                         onChange={this.changeState}
                         required
@@ -204,7 +233,7 @@ class AddShareListComponent extends React.Component {
                     />
                     <br />
                     <br />
-                    <TextField
+                    {/* <TextField
                         label="分帳成員"
                         id="shareListMember"
                         name="shareListMember"
@@ -213,24 +242,40 @@ class AddShareListComponent extends React.Component {
                         required
                         placeholder=""
                         disabled={this.state.mode === 'viewShareList' ? true : false}
-                    />
+                    /> */}
                     <br />
                     <br />
+                    <h4>分帳成員 (送出後無法更改)</h4>
+                    <label>若建立人也為分帳成員，請記得選取</label>
                     <Select
                         defaultValue={[this.state.memberName[2], this.state.memberName[3]]}
                         isMulti
-                        name="colors"
+                        name="memberSelected"
                         options={this.state.memberName}
+                        onChange={this.handleSelectChange}
+                        value={this.state.memberSelected}
                         className="basic-multi-select"
                         classNamePrefix="select"
+                        isDisabled = {this.state.mode === 'editShareList' ? true : false}
+
                     />
                     <br />
                     <br />
-                    <input type="reset" value="清除" hidden={this.state.mode === 'viewShareList' ? true : false} />
+                    <Button variant="contained" color="default" type="reset" hidden={this.state.mode === 'viewShareList' ? true : false}>
+                        清除
+                    </Button>
+                    <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'addShareList' ? false : true}>
+                        新增
+                    </Button>
+                    <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'editShareList' ? false : true}>
+                        儲存
+                    </Button>
+                    {/* <input type="submit" value="儲存" hidden={this.state.mode === 'editShareList' ? false : true} /><input type="reset" value="清除" hidden={this.state.mode === 'viewShareList' ? true : false} />
                     <input type="submit" value="新增" hidden={this.state.mode === 'addShareList' ? false : true} />
-                    <input type="submit" value="儲存" hidden={this.state.mode === 'editShareList' ? false : true} />
+                    <input type="submit" value="儲存" hidden={this.state.mode === 'editShareList' ? false : true} /> */}
 
                 </form>
+               
                 <Modal
                     open={this.state.modalOpen}
                     // onClose={handleClose}
@@ -240,7 +285,7 @@ class AddShareListComponent extends React.Component {
                     <div style={style}>
                         <h2 id="simple-modal-title" hidden={this.state.mode === 'editShareList' ? false : true}>資料已更新</h2>
                         <h2 id="simple-modal-title" hidden={this.state.mode === 'addShareList' ? false : true}>資料已新增</h2>
-                        <button><Link to="./UserListController">確認</Link></button>
+                        <button><Link to="./ShareList">確認</Link></button>
                     </div>
                 </Modal>
 
