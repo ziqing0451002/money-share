@@ -1,5 +1,5 @@
 import React from 'react';
-import AddShareListComponent from '../components/ShareList/AddShareListComponent'
+import AddShareItemComponent from '../components/ShareList/AddShareItemComponent'
 const styles = {
 	about: {
 		padding: '150px',
@@ -9,11 +9,11 @@ const styles = {
 	}
 };
 
-export default class AddShareList extends React.Component {
+export default class AddShareItem extends React.Component {
 	render() {
 		return <div style={styles.about}>
 			
-			<AddShareListComponent />
+			<AddShareItemComponent />
 
 		</div>;
 	}

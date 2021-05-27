@@ -25,11 +25,11 @@ class ShareItemComponent extends React.Component {
             modalOpen: false,
             selectedUser: '',
             userPasswordCommit: '',
-            userLoginAccount:'',
-            userLoginName:'',
+            userLoginAccount: '',
+            userLoginName: '',
 
-            listId:'',
-            listName:''
+            listId: '',
+            listName: ''
         }
     }
 
@@ -44,29 +44,32 @@ class ShareItemComponent extends React.Component {
         {
             field: 'functionList', headerName: '功能', width: 400,
             renderCell: (params) =>
-            // console.log(params);
+                // console.log(params);
                 // console.log(params.row.userAccount)
                 <div>
+                    <Button variant="contained" color="default" >
+                        <Link to={`./AddShareItem?userID=${this.state.userLoginAccount}&listID=${params.row.itemId}&mode=editShareItem`}>編輯名稱</Link>
+                    </Button>
                     <Button variant="contained" color="default" onClick={this.deleteClick}>
                         刪除
                     </Button>
-                    
+
                 </div>
         }];
-        getParameterByName(name, url = window.location.href) {
-            name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
-        }
+    getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
 
     componentDidMount() {
-            var linkListId = this.getParameterByName('listID');
-            var linkUserId = this.getParameterByName('userID');
-            this.setState({ listId: linkListId })
-            this.setState({ userLoginAccount: linkUserId })
+        var linkListId = this.getParameterByName('listID');
+        var linkUserId = this.getParameterByName('userID');
+        this.setState({ listId: linkListId })
+        this.setState({ userLoginAccount: linkUserId })
 
         ShareItemService.getShareItem().then((response) => {
             console.log(response)
@@ -118,15 +121,26 @@ class ShareItemComponent extends React.Component {
     }
 
     setSelection = (rowData) => {
-        try{
+        try {
             this.setState({ selectedUser: rowData.id })
             console.log(rowData)
-        }catch(e){
+        } catch (e) {
             console.log(e)
         }
-        
         // console.log(this.state.selectedUser)
+    }
 
+    shareCalculate = () =>{
+        ShareItemService.resultCalculate(this.state.listId).then((response) => {
+            const data = response.data
+            console.log("data:" + data)
+            // this.setState({ modalOpen: true })
+            console.log("SUCCESS");
+        }
+        ).catch((err) => {
+            console.log("FAIL");
+            console.log(err);
+        })
     }
 
     deleteClick = () => {
@@ -139,12 +153,13 @@ class ShareItemComponent extends React.Component {
     deleteShareItem = () => {
         // console.log(this.state.selectedUser)
         // console.log(this.state.userPasswordCommit)
-        ShareItemService.deleteShareItem(this.state.selectedUser,this.state.userLoginName).then((response) => {
+        ShareItemService.deleteShareItem(this.state.selectedUser, this.state.userLoginName).then((response) => {
             // console.log(response);
             window.alert("刪除成功")
             console.log("SUCCESS");
             console.log(response.data);
             this.setState({ modalOpen: false });
+            window.location.reload();
         }
         ).catch((err) => {
             window.alert("刪除失敗")
@@ -171,14 +186,30 @@ class ShareItemComponent extends React.Component {
             <div style={{ height: 400, width: '100%' }}>
                 <h1 align="left">{this.state.listName}</h1>
                 <h3 align="left">項目清單</h3>
+                <div align="right">
+                    <Button variant="contained" color="default"  >
+                        <Link to="./UserLogin">登出</Link>
+                    </Button>
+                    <br />
+                    <br />
+                </div>
                 <h5 align="right">登入帳號為:{this.state.userLoginAccount}</h5>
                 <Button variant="contained" color="default" >
-                    <Link to={`./AddShareList?mode=addShareList&userID=${this.state.userLoginAccount}`}>+新增一筆</Link>
+                    <Link to={`./AddShareItem?userID=${this.state.userLoginAccount}&listID=${this.state.listId}&mode=addShareItem`}>+新增一筆</Link>
                 </Button>
                 <br />
                 <br />
 
                 <DataGrid rows={this.state.shareItem || []} columns={this.columns} pageSize={20} onRowClick={(rowData) => this.setSelection(rowData)} />
+                <br />
+
+                <div align="right">
+                    <Button variant="contained" color="default" onClick={this.shareCalculate} >
+                        分帳結果計算
+                    </Button>
+                    <br />
+                    <br />
+                </div>
 
                 <Modal
                     open={this.state.modalOpen}

@@ -6,6 +6,7 @@ import ShareList from './controllers/ShareList';
 import ShareItem from './controllers/ShareItem';
 import AddUser from './controllers/AddUser';
 import AddShareList from './controllers/AddShareList';
+import AddShareItem from './controllers/AddShareItem';
 import Home from './controllers/Home';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
@@ -33,6 +34,9 @@ function App() {
           </Route>
           <Route exact path='/AddShareList'>
             <AddShareList />
+          </Route>
+          <Route exact path='/AddShareItem'>
+            <AddShareItem />
           </Route>
         </Switch>
       </BrowserRouter>
