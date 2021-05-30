@@ -8,7 +8,7 @@ import {
 // import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import ShareListService from '../../services/ShareListService';
-import ShareItemService from '../../services/ShareItemService';
+import ShareResultService from '../../services/ShareResultService';
 import UserService from '../../services/UserService';
 // import { Button } from '@material-ui/core';
 import Modal from '@material-ui/core/Modal';
@@ -17,12 +17,12 @@ import moment from 'moment';
 
 
 
-class ShareItemComponent extends React.Component {
+class ShareResultComponent extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            shareItem: [],
+            shareResult: [],
             modalOpen: false,
             selectedUser: '',
             userPasswordCommit: '',
@@ -30,37 +30,20 @@ class ShareItemComponent extends React.Component {
             userLoginName: '',
 
             listId: '',
-            listName: '',
-            mode: '',
-
+            listName: ''
         }
     }
 
     columns = [
         { field: 'number', headerName: '序號', width: 100 },
-        { field: 'itemId', headerName: '品項ID', width: 150 },
-        { field: 'itemName', headerName: '品項名稱', width: 200 },
-        { field: 'itemCost', headerName: '品項金額', width: 150 },
-        { field: 'itemCreater', headerName: '品項建立人', width: 150 },
-        { field: 'itemMember', headerName: '分帳成員', width: 450 },
-        { field: 'createdTime', headerName: '建立時間', width: 200 },
-        // { field: 'updatedTime', headerName: '最後更新時間', width: 140 },
-        {
-            field: 'functionList', headerName: '功能', width: 200,
-            renderCell: (params) =>
-                // console.log(params);
-                // console.log(params.row.userAccount)
-                <div>
-                    <Button variant="contained" color="default" >
-                        <Link to={`./AddShareItem?userID=${this.state.userLoginAccount}&listID=${this.state.listId}&itemID=${params.row.itemId}&mode=editShareItem`}>編輯</Link>
-                    </Button>
-                    <label>.....</label>
-                    <Button variant="contained" color="default" onClick={this.deleteClick}>
-                        刪除
-                    </Button>
-
-                </div>
-        }];
+        { field: 'resultId', headerName: '分帳結果ID', width: 150 },
+        { field: 'shareListId', headerName: '所屬分帳表ID', width: 150 },
+        { field: 'memberName', headerName: '分帳人', width: 200 },
+        { field: 'createdTime', headerName: '產生時間', width: 220 },
+        { field: 'payTotal', headerName: '已代墊總和', width: 150 },
+        { field: 'shareTotal', headerName: '分帳金額', width: 150 },
+        { field: 'resultTotal', headerName: '最終結果', width: 150 },
+        ];
     getParameterByName(name, url = window.location.href) {
         name = name.replace(/[\[\]]/g, '\\$&');
         var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -76,11 +59,11 @@ class ShareItemComponent extends React.Component {
         this.setState({ listId: linkListId })
         this.setState({ userLoginAccount: linkUserId })
 
-        ShareItemService.getShareItemByShareListId(linkListId).then((response) => {
+        ShareResultService.getShareResultById(linkListId).then((response) => {
             console.log(response)
             const data = response.data
-            const shareItem = data.map((item, index) => ({ ...item, id: item.itemId, number: index + 1 ,createdTime: moment(item.createdTime).format("YYYY-MM-DD HH:mm:ss")}))
-            this.setState({ shareItem })
+            const shareResult = data.map((item, index) => ({ ...item, id: item.resultId, number: index + 1 ,createdTime: moment(item.createdTime).format("YYYY-MM-DD HH:mm:ss")}))
+            this.setState({ shareResult })
             // console.log(this.state)
         })
 
@@ -135,12 +118,11 @@ class ShareItemComponent extends React.Component {
         // console.log(this.state.selectedUser)
     }
 
-    shareCalculate = () => {
-        ShareItemService.resultCalculate(this.state.listId).then((response) => {
+    shareCalculate = () =>{
+        ShareResultService.resultCalculate(this.state.listId).then((response) => {
             const data = response.data
             console.log("data:" + data)
-            this.setState({ modalOpen: true })
-            this.setState({ mode: "shareCalculate" })
+            // this.setState({ modalOpen: true })
             console.log("SUCCESS");
         }
         ).catch((err) => {
@@ -151,17 +133,15 @@ class ShareItemComponent extends React.Component {
 
     deleteClick = () => {
         this.setState({ modalOpen: true });
-        this.setState({ mode: "deleteShareItem" });
-
         // this.setState({ selectedUser: this.state.user[this.state.index]})
         // UserService.deleteUser(this.state).then((response) => {
         //     console.log("SUCCESS")
         // })
     }
-    deleteShareItem = () => {
+    deleteShareResult = () => {
         // console.log(this.state.selectedUser)
         // console.log(this.state.userPasswordCommit)
-        ShareItemService.deleteShareItem(this.state.selectedUser, this.state.userLoginName).then((response) => {
+        ShareResultService.deleteShareResult(this.state.selectedUser, this.state.userLoginName).then((response) => {
             // console.log(response);
             window.alert("刪除成功")
             console.log("SUCCESS");
@@ -193,76 +173,51 @@ class ShareItemComponent extends React.Component {
         return (
             <div style={{ height: 400, width: '100%' }}>
                 <h1 align="left">{this.state.listName}</h1>
-                <h3 align="left">項目清單</h3>
-                <div >
-                    <Button variant="contained" color="default" style={{float:'right'}} >
+                <h3 align="left">分帳結果</h3>
+                <div align="right">
+                    <Button variant="contained" color="default"  >
                         <Link to="./UserLogin">登出</Link>
                     </Button>
                     <br />
                     <br />
-                    <h5 style={{float:'right'}}>登入帳號為 : {this.state.userLoginAccount}</h5>
-                    <Button variant="contained" color="default" >
-                        <Link to={`./AddShareItem?userID=${this.state.userLoginAccount}&listID=${this.state.listId}&mode=addShareItem`}>+新增一筆</Link>
-                    </Button>
-                    <br />
-                    <br />
                 </div>
+                <h5 align="right">登入帳號為:{this.state.userLoginAccount}</h5>
+                
 
-
-                <DataGrid rows={this.state.shareItem || []} columns={this.columns} pageSize={20} onRowClick={(rowData) => this.setSelection(rowData)} />
+                <DataGrid rows={this.state.shareResult || []} columns={this.columns} pageSize={20} onRowClick={(rowData) => this.setSelection(rowData)} />
                 <br />
 
-                <div >
-                    <Button variant="contained" color="default" onClick={this.shareCalculate} style={{ float: 'right' }}>
-                        分帳結果計算
+                <div align="right">
+                    <Button variant="contained" color="default" style={{float:'right'}}>
+                    <Link to={`/ShareList?userID=${this.state.userLoginAccount}`}>回首頁</Link>
                     </Button>
-                    <Button variant="contained" color="default" type="reset" style={{ float: 'left' }}>
-                        <Link to={`./ShareList?userID=${this.state.userLoginAccount}`}>返回</Link>
-                    </Button>
+                    <Button variant="contained" color="default" type="reset" style={{float:'left'}}>
+                            <Link to={`./ShareItem?userID=${this.state.userLoginAccount}&listID=${this.state.listId}`}>返回</Link>
+                        </Button>
                     <br />
                     <br />
                 </div>
 
-                <Modal
+
+
+                {/* <Modal
                     open={this.state.modalOpen}
                     // onClose={handleClose}
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
                 >
-                    <div style={style} >
-                        <div hidden={this.state.mode === 'deleteShareItem' ? false : true}>
-                            <h2 id="simple-modal-title">確定刪除資料</h2>
-                            <h5 >刪除資料後無法復原</h5>
-                            <br />
-                            <button onClick={this.deleteShareItem}>確認</button>
-                            <button onClick={this.deleteCancel}> 取消</button>
-                        </div>
-                        <div hidden={this.state.mode === 'shareCalculate' ? false : true}>
-                            <h2 id="simple-modal-title">分帳計算成功</h2>
-                            <h5 >即將跳轉至分帳結果頁面</h5>
-                            <br />
-                            <button ><Link to={`./ShareResult?userID=${this.state.userLoginAccount}&listID=${this.state.listId}`}>確認</Link></button>
-                        </div>
-                    </div>
-
-                    {/* <div style={style} hidden={this.state.mode === 'deleteShareItem' ? false : true}>
+                    <div style={style}>
                         <h2 id="simple-modal-title">確定刪除資料</h2>
                         <h5 >刪除資料後無法復原</h5>
                         <br />
-                        <button onClick={this.deleteShareItem}>確認</button>
+                        <button onClick={this.deleteShareResult}>確認</button>
                         <button onClick={this.deleteCancel}> 取消</button>
                     </div>
-                    <div style={style} hidden={this.state.mode === 'shareCalculate' ? false : true}>
-                        <h2 id="simple-modal-title">分帳計算成功</h2>
-                        <h5 >即將跳轉至分帳結果頁面</h5>
-                        <br />
-                        <button ><Link to={`./ShareResult?userID=${this.state.userLoginAccount}&listID=${this.state.listId}`}>確認</Link></button>
-                    </div> */}
-                </Modal>
+                </Modal> */}
             </div>
 
         )
     }
 
 }
-export default ShareItemComponent
+export default ShareResultComponent

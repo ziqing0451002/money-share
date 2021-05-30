@@ -15,6 +15,11 @@ class ShareItemService{
         return axios.get(USER_REST_API_URL + "/getShareItemById/" + itemId);
     }
 
+    getShareItemByShareListId(shareListId){
+        //http://localhost:8080/ShareItem/getShareItemByShareListId/
+        return axios.get(USER_REST_API_URL + "/getShareItemByShareListId/" + shareListId + "?");
+    }
+
     addShareItem(addJson){
         console.log("addJson:",addJson)
         //http://localhost:8080/ShareItem/addShareItem

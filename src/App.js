@@ -4,6 +4,7 @@ import UserLoginComponent from './components/User/UserLoginComponent';
 import UserLogin from './controllers/UserLogin';
 import ShareList from './controllers/ShareList';
 import ShareItem from './controllers/ShareItem';
+import ShareResult from './controllers/ShareResult';
 import AddUser from './controllers/AddUser';
 import AddShareList from './controllers/AddShareList';
 import AddShareItem from './controllers/AddShareItem';
@@ -28,6 +29,9 @@ function App() {
           </Route>
           <Route exact path='/ShareItem'>
             <ShareItem />
+          </Route>
+          <Route exact path='/ShareResult'>
+            <ShareResult />
           </Route>
           <Route exact path='/AddUser'>
             <AddUser />

@@ -15,6 +15,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Select from 'react-select';
 import { Redirect } from 'react-router';
+import ShareListService from '../../services/ShareListService';
 
 // import { colourOptions } from '../data';
 
@@ -35,9 +36,10 @@ class AddShareItemComponent extends React.Component {
             memberList: [],
             memberName: [],
             value: '',
-            memberSelected:"",
-            shareListId:'',
-            listCreater:''
+            memberSelected: "",
+            shareListId: '',
+            listCreater: '',
+            memberInShareList: ''
 
 
         }
@@ -47,7 +49,7 @@ class AddShareItemComponent extends React.Component {
     }
 
     handleSelectChange = (e) => {
-        console.log("e:"+ e)
+        console.log("e:" + e)
         const addNameList = e.map((userName) => userName.value);
         this.setState({
             memberSelected: e,
@@ -73,7 +75,7 @@ class AddShareItemComponent extends React.Component {
                 this.setState({ modalOpen: true });
             }).catch((err) => {
                 window.alert("新增失敗")
-                console.log("err: "+ err);
+                console.log("err: " + err);
                 this.setState({ modalOpen: false });
                 // this.setState({ redirect: false })
             })
@@ -109,14 +111,17 @@ class AddShareItemComponent extends React.Component {
         var linkMode = this.getParameterByName('mode');
         var linkUserId = this.getParameterByName('userID');
         var linkListId = this.getParameterByName('listID');
+        var linkItemId = this.getParameterByName('itemID');
         console.log(linkUserId)
+        console.log(linkListId)
         this.setState({ mode: linkMode })
         this.setState({ userLoginAccount: linkUserId })
         this.setState({ shareListId: linkListId })
+        this.getShareListById(linkListId)
         this.getUsers(linkUserId)
         this.getUserLogin(linkUserId)
-        if (linkMode === "editShareItem" ){
-            this.getShareItemInfo(linkListId)
+        if (linkMode === "editShareItem") {
+            this.getShareItemInfo(linkItemId)
 
         }
 
@@ -138,11 +143,26 @@ class AddShareItemComponent extends React.Component {
     }
 
     //得到member清單
+    //該分帳表之成員
+    getShareListById = (shareListId) => {
+        ShareListService.getShareListById(shareListId).then((response) => {
+            const data = response.data
+            console.log("data:" + data)
+            this.setState({ memberInShareList: data.listMember })
+            console.log("SUCCESS");
+        }
+        ).catch((err) => {
+            console.log("FAIL");
+            console.log(err);
+        })
+    }
+    //所有帳戶
     getUsers = () => {
         UserService.getUsers().then((response) => {
             const data = response.data
             console.log("data:" + data)
-            const memberList = data.map((item) => ({ ...item }))
+            const memberList = data.filter(swag => this.state.memberInShareList.indexOf(swag.userName) !== -1)
+            // const memberList = data.map((item) => ({ ...item }))
             const memberName = memberList.map((userName) => ({ value: userName.userName, label: userName.userName + "(" + userName.userAccount + ")" }))
             this.setState({ memberList })
             this.setState({ memberName })
@@ -172,13 +192,13 @@ class AddShareItemComponent extends React.Component {
             console.log(members)
             const allMembers = this.state.memberName
             console.log(allMembers)
-            const memberShow = allMembers.filter(allMember=>members.find(member=>allMember.value===member))
+            const memberShow = allMembers.filter(allMember => members.find(member => allMember.value === member))
             this.setState({ memberSelected: memberShow })
 
             // const memberShow = allMember.map((userName,item) => ({ 
-                
+
             //     value: userName.userName, label: userName.userName
-                
+
             // }))
         })
     }
@@ -194,9 +214,10 @@ class AddShareItemComponent extends React.Component {
             padding: '8px',
             cursor: 'pointer'
         };
+        
         return (
 
-            <div style={{ height: 400, width: '100%' }}>
+            <div style={{ height: 400, width: '70%'}}>
                 <h1 align="left" hidden={this.state.mode === 'addShareItem' ? false : true}>分帳項目新增</h1>
                 <h1 align="left" hidden={this.state.mode === 'editShareItem' ? false : true}>分帳項目編輯</h1>
                 <div align="right">
@@ -206,7 +227,7 @@ class AddShareItemComponent extends React.Component {
                     <br />
                     <br />
                 </div>
-                <h5 align="right">登入帳號為:{this.state.userLoginAccount}</h5>
+                <h5 align="right">登入帳號為 : {this.state.userLoginAccount}</h5>
 
 
                 <form onSubmit={this.submitForm} align="left">
@@ -281,28 +302,32 @@ class AddShareItemComponent extends React.Component {
                         value={this.state.memberSelected}
                         className="basic-multi-select"
                         classNamePrefix="select"
-                        // isDisabled = {this.state.mode === 'editShareItem' ? true : false}
+                    // isDisabled = {this.state.mode === 'editShareItem' ? true : false}
 
                     />
                     <br />
                     <br />
-                    <Button variant="contained" color="default" type="reset" hidden={this.state.mode === 'viewShareItem' ? true : false}>
-                        清除
-                    </Button>
-                    <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'addShareItem' ? false : true}>
-                        新增
-                    </Button>
-                    <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'editShareItem' ? false : true}>
-                        儲存
-                    </Button>
+                    <div  >
+                        <Button variant="contained" color="default" type="reset" style={{float:'left'}}>
+                            <Link to={`./ShareItem?userID=${this.state.userLoginAccount}&listID=${this.state.shareListId}`}>返回</Link>
+                        </Button>
+                        <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'addShareItem' ? false : true} style={{float:'right'}}>
+                            新增
+                        </Button>
+                        <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'editShareItem' ? false : true} style={{float:'right'}}>
+                            儲存
+                        </Button>
+                    </div>
+                    
+
                     {/* <input type="submit" value="儲存" hidden={this.state.mode === 'editShareItem' ? false : true} /><input type="reset" value="清除" hidden={this.state.mode === 'viewShareItem' ? true : false} />
                     <input type="submit" value="新增" hidden={this.state.mode === 'addShareItem' ? false : true} />
                     <input type="submit" value="儲存" hidden={this.state.mode === 'editShareItem' ? false : true} /> */}
 
                 </form>
 
-                
-               
+
+
                 <Modal
                     open={this.state.modalOpen}
                     // onClose={handleClose}

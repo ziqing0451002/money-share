@@ -199,7 +199,7 @@ class AddShareListComponent extends React.Component {
                     <br />
                     <br />
                 </div>
-                <h5 align="right">登入帳號為:{this.state.userLoginAccount}</h5>
+                <h5 align="right">登入帳號為 : {this.state.userLoginAccount}</h5>
 
 
                 <form onSubmit={this.submitForm} align="left">
@@ -269,15 +269,18 @@ class AddShareListComponent extends React.Component {
                     />
                     <br />
                     <br />
-                    <Button variant="contained" color="default" type="reset" hidden={this.state.mode === 'viewShareList' ? true : false}>
-                        清除
-                    </Button>
-                    <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'addShareList' ? false : true}>
-                        新增
-                    </Button>
-                    <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'editShareList' ? false : true}>
-                        儲存
-                    </Button>
+                    <div  >
+                        <Button variant="contained" color="default" type="reset" style={{float:'left'}}>
+                            <Link to={`./ShareList?userID=${this.state.userLoginAccount}`}>返回</Link>
+                        </Button>
+                        <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'addShareList' ? false : true} style={{float:'right'}}>
+                            新增
+                        </Button>
+                        <Button variant="contained" color="primary" type="submit" hidden={this.state.mode === 'editShareList' ? false : true} style={{float:'right'}}>
+                            儲存
+                        </Button>
+                    </div>
+
                     {/* <input type="submit" value="儲存" hidden={this.state.mode === 'editShareList' ? false : true} /><input type="reset" value="清除" hidden={this.state.mode === 'viewShareList' ? true : false} />
                     <input type="submit" value="新增" hidden={this.state.mode === 'addShareList' ? false : true} />
                     <input type="submit" value="儲存" hidden={this.state.mode === 'editShareList' ? false : true} /> */}

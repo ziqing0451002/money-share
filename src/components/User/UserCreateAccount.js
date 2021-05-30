@@ -8,6 +8,10 @@ import {
     Route,
     Link
 } from "react-router-dom";
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+
+
 
 
 class UserCreateAccount extends React.Component {
@@ -68,38 +72,57 @@ class UserCreateAccount extends React.Component {
         return (
             <div>
                 <h1 align="center">建立帳號</h1>
-                <label>帳號：</label>
-                <input 
-                id="userAccount" 
-                onChange={(e) => this.handleChange(e)}
-                value={this.state.userAccount} 
-                />
                 <br/>
-                <label>密碼：</label>
-                <input 
-                id="userPassword"
-                type="password" 
-                onChange={(e) => this.handleChange(e)}
-                value={this.state.userPassword} 
-                />
-                <br/>
-                <label>暱稱：</label>
-                <input 
-                id="userName" 
-                onChange={(e) => this.handleChange(e)}
-                value={this.state.userName} 
-                />
-                <br/>
-                <label>手機：</label>
-                <input 
-                id="userPhoneNumber" 
-                onChange={(e) => this.handleChange(e)}
-                value={this.state.userPhoneNumber} 
-                />
-                <br/>
-                <button onClick={this.submit}>確認</button>
-                <button onClick={this.cancel}>取消</button>
 
+                <TextField
+                        label="帳號"
+                        id="userAccount"
+                        name="userAccount"
+                        value={this.state.userAccount}
+                        onChange={(e) => this.handleChange(e)}
+                        required
+                />
+                <br/>
+                <br/>
+                <TextField
+                        label="密碼"
+                        type="password"
+                        id="userPassword"
+                        name="userPassword"
+                        value={this.state.userPassword}
+                        onChange={(e) => this.handleChange(e)}
+                        required
+                    />
+                <br/>
+                <br/>
+                <TextField
+                        label="暱稱"
+                        id="userName"
+                        name="userName"
+                        value={this.state.userName}
+                        onChange={(e) => this.handleChange(e)}
+                        required
+                    />
+                <br/>
+                <br/>
+                <TextField
+                        label="手機"
+                        id="userPhoneNumber"
+                        name="userPhoneNumber"
+                        value={this.state.userPhoneNumber}
+                        onChange={(e) => this.handleChange(e)}
+                        required
+                    />
+                <br/>
+                <br/>
+                
+                <Button variant="contained" color="default" onClick={this.submit} >
+                    確認
+                </Button>
+                <label>  &nbsp;&nbsp;&nbsp; </label>
+                <Button variant="contained" color="default" onClick={this.cancel} >
+                    取消
+                </Button>
                 <Modal
                     open={this.state.modalOpen}
                     // onClose={handleClose}

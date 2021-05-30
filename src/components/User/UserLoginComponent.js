@@ -7,6 +7,10 @@ import {
     Link
 } from "react-router-dom";
 import { Redirect } from 'react-router';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+
+
 
 
 
@@ -72,22 +76,32 @@ class UserLoginComponent extends React.Component {
         return (
             <div style={{ height: 400, width: '100%' }}>
                 <h1 align="center">分帳程式</h1>
-                <label>帳號：</label>
-                <input
+                <TextField
+                    label="帳號"
                     id="userAccount"
-                    onChange={(e) => this.handleChange(e)}
+                    name="userAccount"
                     value={this.state.userAccount}
-                />
-                <br />
-                <label>密碼：</label>
-                <input type="password"
-                    id="userPassword"
                     onChange={(e) => this.handleChange(e)}
-                    value={this.state.userPassword}
+                    required
                 />
                 <br />
-                <button onClick={this.userLogin}>確認</button>
-                <button ><Link to="./AddUser">建立帳號</Link></button>
+                <br />
+                <TextField
+                    label="密碼"
+                    type="password"
+                    id="userPassword"
+                    name="userPassword"
+                    value={this.state.userPassword}
+                    onChange={(e) => this.handleChange(e)}
+                    required
+                />
+                <br />
+                <br />
+                <Button variant="contained" color="default" onClick={this.userLogin}>確認</Button>
+                <label>  &nbsp;&nbsp;&nbsp; </label>
+                <Button variant="contained" color="default" >
+                    <Link to="./AddUser">建立帳號</Link>
+                </Button>
                 {/* <button onClick={this.forgetPassword}>忘記密碼</button> */}
 
             </div>

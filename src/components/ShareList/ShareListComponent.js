@@ -12,6 +12,8 @@ import UserService from '../../services/UserService';
 // import { Button } from '@material-ui/core';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
+import moment from 'moment';
+
 
 
 
@@ -25,7 +27,9 @@ class ShareListComponent extends React.Component {
             selectedUser: '',
             userPasswordCommit: '',
             userLoginAccount: '',
-            userLoginName: ''
+            userLoginName: '',
+            test:'2021-05-29T14:28:36.740+00:00',
+            test_format:''
         }
     }
 
@@ -34,11 +38,11 @@ class ShareListComponent extends React.Component {
         { field: 'listId', headerName: '分帳ID', width: 150 },
         { field: 'listName', headerName: '分帳表名稱', width: 200 },
         { field: 'listCreater', headerName: '建立人', width: 150 },
-        { field: 'listMember', headerName: '分帳成員', width: 300 },
-        { field: 'createdTime', headerName: '建立時間', width: 120 },
-        { field: 'updatedTime', headerName: '最後更新時間', width: 140 },
+        { field: 'listMember', headerName: '分帳成員', width: 500 },
+        { field: 'createdTime', headerName: '建立時間', width: 200 },
+        // { field: 'updatedTime', headerName: '最後更新時間', width: 140 },
         {
-            field: 'functionList', headerName: '功能', width: 400,
+            field: 'functionList', headerName: '功能', width: 300,
             renderCell: (params) =>
                 // console.log(params);
                 // console.log(params.row.userAccount)
@@ -83,13 +87,13 @@ class ShareListComponent extends React.Component {
         ShareListService.getShareList().then((response) => {
             console.log(response)
             const data = response.data
-            const shareList = data.map((item, index) => ({ ...item, id: item.listId, number: index + 1 }))
+            const shareList = data.map((item, index) => ({ ...item, id: item.listId, number: index + 1 ,createdTime: moment(item.createdTime).format("YYYY-MM-DD HH:mm:ss")})) //,createdTime: item.createdTime.format("yyyy/mm/dd. hh:MM:ss")
             this.setState({ shareList })
             // console.log(this.state)
         })
 
         this.getUserLogin(linkUserId)
-
+        
     }
 
     //得到登入者資訊
@@ -141,6 +145,7 @@ class ShareListComponent extends React.Component {
             console.log("SUCCESS");
             console.log(response.data);
             this.setState({ modalOpen: false });
+            window.location.reload();
         }
         ).catch((err) => {
             window.alert("刪除失敗")
@@ -167,20 +172,22 @@ class ShareListComponent extends React.Component {
             <div style={{ height: 400, width: '100%' }}>
                 <h1 align="left">分帳程式</h1>
                 <h3 align="left">分帳清單</h3>
-                <div align="right">
-                    <Button variant="contained" color="default"  >
+                <div >
+                    <Button variant="contained" color="default" style={{float:'right'}} >
                         <Link to="./UserLogin">登出</Link>
                     </Button>
                     <br />
                     <br />
+                    <h5 style={{float:'right'}}>登入帳號為 : {this.state.userLoginAccount}</h5>
+                    <Button variant="contained" color="default"  >
+                        <Link to={`./AddShareList?mode=addShareList&userID=${this.state.userLoginAccount}`}>+新增一筆</Link>
+                    </Button>
+                    <br />
+                    <br />
                 </div>
-                <h5 align="right">登入帳號為:{this.state.userLoginAccount}</h5>
 
-                <Button variant="contained" color="default" >
-                    <Link to={`./AddShareList?mode=addShareList&userID=${this.state.userLoginAccount}`}>+新增一筆</Link>
-                </Button>
-                <br />
-                <br />
+
+
 
                 <DataGrid rows={this.state.shareList || []} columns={this.columns} pageSize={20} onRowClick={(rowData) => this.setSelection(rowData)} />
                 <br />
