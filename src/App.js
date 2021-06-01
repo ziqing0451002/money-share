@@ -18,8 +18,9 @@ function App() {
 
       <BrowserRouter>
         <Switch>
-        <Route exact path='/'>
-            <Home />
+        <Route exact path='/MoneyShare-React'>
+            <UserLogin />
+            {/* <Home /> */}
           </Route>
           <Route exact path='/UserLogin'>
             <UserLogin />
