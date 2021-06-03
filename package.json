@@ -1,7 +1,7 @@
 {
+  "homepage": "https://ziqing0451002.github.io/money-share-react",
   "name": "money-share-react",
   "version": "0.1.0",
-  "homepage": "https://ziqing0451002.github.io/money-share-react",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.4",
