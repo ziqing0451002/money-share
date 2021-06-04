@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const USER_REST_API_URL = "http://115.165.204.34:8080/ShareList";
+const USER_REST_API_URL = "http://localhost:8080/ShareList";
 
 class ShareListService{
 
