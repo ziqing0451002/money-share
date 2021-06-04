@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const USER_REST_API_URL = "https://115.165.204.34:8080/UserInfo";
+const USER_REST_API_URL = "http://115.165.204.34:8080/UserInfo";
 
 class UserService{
 
