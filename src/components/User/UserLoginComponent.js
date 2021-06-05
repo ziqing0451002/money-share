@@ -75,7 +75,8 @@ class UserLoginComponent extends React.Component {
 
         return (
             <div style={{ height: 400, width: '100%' }}>
-                <h1 align="center">分帳程式</h1>
+                <h1 align="center">共同分擔原則</h1>
+                <h6 align="center">該付多少就付多少，一個也別想跑</h6>
                 <TextField
                     label="帳號"
                     id="userAccount"
