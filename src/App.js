@@ -34,13 +34,13 @@ function App() {
           <Route exact path='/ShareResult'>
             <ShareResult />
           </Route>
-          <Route exact path='/AddUser'>
+          <Route exact path='/money-share/AddUser'>
             <AddUser />
           </Route>
           <Route exact path='/AddShareList'>
             <AddShareList />
           </Route>
-          <Route exact path='/money-share/AddShareItem'>
+          <Route exact path='/AddShareItem'>
             <AddShareItem />
           </Route>
         </Switch>

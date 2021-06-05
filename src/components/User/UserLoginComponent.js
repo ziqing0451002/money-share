@@ -100,7 +100,7 @@ class UserLoginComponent extends React.Component {
                 <Button variant="contained" color="default" onClick={this.userLogin}>確認</Button>
                 <label>  &nbsp;&nbsp;&nbsp; </label>
                 <Button variant="contained" color="default" >
-                    <Link to="./AddUser">建立帳號</Link>
+                    <Link to="./money-share/AddUser">建立帳號</Link>
                 </Button>
                 {/* <button onClick={this.forgetPassword}>忘記密碼</button> */}
 
