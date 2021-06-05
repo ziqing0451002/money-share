@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-//0604 deploy test 2
-const USER_REST_API_URL = "http://localhost:8080/ShareItem";
+// const USER_REST_API_URL = "http://localhost:8080/ShareItem";
+const USER_REST_API_URL = "https://40d88683935b.ngrok.io/ShareItem";
 
 class ShareItemService{
 
