@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 //0604 deploy test 2
-const USER_REST_API_URL = "https://25.32.250.115:8080/ShareItem";
+const USER_REST_API_URL = "http://25.32.250.115:8080/ShareItem";
 
 class ShareItemService{
 
